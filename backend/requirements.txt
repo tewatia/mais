@@ -1,0 +1,19 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+httpx==0.28.1
+
+# LangChain core + provider integrations
+langchain==1.1.3
+langchain-core==1.2.0
+langchain-text-splitters==1.0.0
+langchain-openai==1.1.2
+langchain-anthropic==1.3.0
+langchain-google-genai==4.0.0
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+
+
