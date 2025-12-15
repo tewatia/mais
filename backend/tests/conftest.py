@@ -20,8 +20,6 @@ def app():
     # ensure fresh settings per test session
     get_settings.cache_clear()
     # Ensure test environment settings (avoid orphan-cancel interfering with tests).
-    os.environ.setdefault("ENV", "test")
-    os.environ.setdefault("ORPHAN_GRACE_SECONDS", "0")
+    os.environ["ENV"] = "test"
+    os.environ["ORPHAN_GRACE_SECONDS"] = "0"
     return create_app()
-
-

@@ -2,10 +2,10 @@
 
 ![Banner](./assets/banner.png)
 
-
 MAIS is a web app for running **turn-based, multi-actor LLM simulations** with real-time streaming.
 
 ## What if…?
+
 What if large language models could talk to each other?
 What if Gemini 3 Pro could debate GPT-5.2 on safety versus capability, or argue with Claude about whether reasoning should be cautious or bold?
 What if Isaac Newton could debate Friedrich Nietzsche on determinism and free will?
@@ -15,6 +15,7 @@ What if Nelson Mandela sat across from Niccolò Machiavelli to argue whether mor
 This project creates a round table where multiple AI models talk to each other—not just different personas, but different systems. Imagine ChatGPT debating Gemini on strategy, Claude critiquing both for hidden assumptions, or a local open-source model playing the skeptic.
 
 You can configure:
+
 - **Interaction modes**: Debate, Collaboration, Interaction, Custom
 - **Actors**: persona, model, optional system prompt
 - **Debate**: per-actor side (For/Against/Auto) + optional Moderator
@@ -25,6 +26,7 @@ The UI renders messages as **Markdown** (code blocks, lists, etc.) and streams t
 ---
 
 ## Repository structure
+
 - `backend/`: FastAPI + LangChain (multi-provider LLM calls)
 - `frontend/`: React + Vite + TypeScript
 - `FUNCTIONAL_REQUIREMENTS.md`: product requirements (MVP)
@@ -34,6 +36,7 @@ The UI renders messages as **Markdown** (code blocks, lists, etc.) and streams t
 ---
 
 ## Prerequisites
+
 - **Python 3.11+**
 - **Node.js 18+**
 
@@ -42,7 +45,20 @@ The UI renders messages as **Markdown** (code blocks, lists, etc.) and streams t
 ## Quickstart (local dev)
 
 ### 1) Backend (FastAPI)
+
 From repo root:
+
+### Linux / macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r backend/requirements.txt
+cp backend/env.example backend/.env
+```
+
+### Windows
 
 ```powershell
 python -m venv .venv
@@ -53,6 +69,7 @@ copy backend\env.example backend\.env
 ```
 
 Edit `backend/.env` and set at least one provider key (depending on models you use):
+
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - `GOOGLE_API_KEY`
@@ -66,6 +83,7 @@ uvicorn app.main:app --app-dir backend --reload --host 0.0.0.0 --port 8000
 Backend runs at `http://localhost:8000`.
 
 ### 2) Frontend (React)
+
 From repo root:
 
 ```powershell
@@ -78,7 +96,28 @@ Frontend runs at `http://localhost:5173`.
 
 ---
 
+## Configuration
+
+### Adding New Models
+
+The application loads available models from `backend/model_catalog.json`. To add a new model (e.g., a new OpenAI model or a local Ollama model), simply edit this file.
+
+Example entry:
+
+```json
+{
+  "id": "my-new-model",
+  "display_name": "My New Model",
+  "provider": "openai"
+}
+```
+
+Supported providers: `openai`, `anthropic`, `google`, `ollama`.
+
+---
+
 ## How to use (UI)
+
 1. Pick an interaction mode in the left panel.
 2. Set the topic and configure actors in the center panel.
 3. Click **Start Simulation** and watch the Live Stage stream.
@@ -86,6 +125,7 @@ Frontend runs at `http://localhost:5173`.
 5. Click **Download** to save the transcript JSON.
 
 Notes:
+
 - The server enforces **one active simulation at a time** (starting a second returns `409`).
 - If no client is listening to the SSE stream, the backend auto-stops after `ORPHAN_GRACE_SECONDS`.
 
@@ -186,6 +226,5 @@ npm test
 ---
 
 ## Documentation
+
 - Backend API + execution flow: `backend/TECHNICAL_DOCUMENTATION.md`
-
-

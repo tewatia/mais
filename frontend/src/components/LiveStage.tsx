@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { ChatItem, StreamStatus } from '../hooks/useSimulationStream';
 import { MarkdownText } from './MarkdownText';
 
@@ -30,6 +31,12 @@ export function LiveStage({
   canStop,
   palette,
 }: Props) {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [items]);
+
   const isStarting = (status === 'connecting' || status === 'connected' || status === 'started') && items.length === 0;
   return (
     <div className="panel panelColumn liveStagePanel">
@@ -61,6 +68,7 @@ export function LiveStage({
             </div>
           </div>
         ))}
+        <div ref={bottomRef} />
       </div>
 
       <div className="panelFooter">

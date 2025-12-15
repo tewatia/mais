@@ -31,11 +31,17 @@ async def test_start_and_download_transcript(app, monkeypatch):
         "stage": "Mode: Debate Arena. Critique and disagree when appropriate.",
         "turn_limit": 2,
         "agents": [
-            {"name": "Agent A", "model": "gpt-4o-mini", "system_prompt": "Be concise."},
+            {
+                "name": "Agent A",
+                "model": "gpt-4o-mini",
+                "system_prompt": "Be concise.",
+                "provider": "openai",
+            },
             {
                 "name": "Agent B",
                 "model": "claude-3-sonnet",
                 "system_prompt": "Be skeptical.",
+                "provider": "anthropic",
             },
         ],
         "moderator": {"enabled": False},
@@ -78,8 +84,8 @@ async def test_stop_simulation(app, monkeypatch):
         "stage": "Mode: Collaboration. Build on previous message constructively.",
         "turn_limit": 10,
         "agents": [
-            {"name": "Agent A", "model": "gpt-4o-mini"},
-            {"name": "Agent B", "model": "gpt-4o-mini"},
+            {"name": "Agent A", "model": "gpt-4o-mini", "provider": "openai"},
+            {"name": "Agent B", "model": "gpt-4o-mini", "provider": "openai"},
         ],
         "moderator": {"enabled": False},
     }
@@ -107,8 +113,8 @@ async def test_collaboration_synthesizer_runs(app, monkeypatch):
         "stage": "This is a collaborative setting.",
         "turn_limit": 3,
         "agents": [
-            {"name": "Agent A", "model": "gpt-4o-mini"},
-            {"name": "Agent B", "model": "gpt-4o-mini"},
+            {"name": "Agent A", "model": "gpt-4o-mini", "provider": "openai"},
+            {"name": "Agent B", "model": "gpt-4o-mini", "provider": "openai"},
         ],
         "moderator": {"enabled": False},
         "synthesizer": {"enabled": True, "model": "gpt-4o-mini", "frequency_turns": 2},
@@ -147,8 +153,8 @@ async def test_interaction_mode_runs(app, monkeypatch):
         "stage": "Mode: Interaction. Converse naturally.",
         "turn_limit": 2,
         "agents": [
-            {"name": "Agent A", "model": "gpt-4o-mini"},
-            {"name": "Agent B", "model": "gpt-4o-mini"},
+            {"name": "Agent A", "model": "gpt-4o-mini", "provider": "openai"},
+            {"name": "Agent B", "model": "gpt-4o-mini", "provider": "openai"},
         ],
         "moderator": {"enabled": False},
     }
@@ -194,8 +200,18 @@ async def test_stage_is_prepended_to_system_prompt(app, monkeypatch):
         "stage": stage,
         "turn_limit": 1,
         "agents": [
-            {"name": "Agent A", "model": "gpt-4o-mini", "system_prompt": "Be concise."},
-            {"name": "Agent B", "model": "gpt-4o-mini", "system_prompt": "Be concise."},
+            {
+                "name": "Agent A",
+                "model": "gpt-4o-mini",
+                "system_prompt": "Be concise.",
+                "provider": "openai",
+            },
+            {
+                "name": "Agent B",
+                "model": "gpt-4o-mini",
+                "system_prompt": "Be concise.",
+                "provider": "openai",
+            },
         ],
         "moderator": {"enabled": False},
     }

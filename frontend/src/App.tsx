@@ -193,7 +193,7 @@ export default function App() {
   }, [agents]);
   const isValid = useMemo(() => {
     if (!topic.trim()) return false;
-    if (!stage.trim()) return false;
+
     if (agents.length < 2) return false;
     if (agentNameSet.size !== agents.length) return false;
     return agents.every((a) => a.name.trim() && a.model.trim());

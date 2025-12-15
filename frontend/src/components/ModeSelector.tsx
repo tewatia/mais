@@ -79,7 +79,7 @@ export function ModeSelector({ mode, onChange, stage, onStageChange }: Props) {
           rows={5}
           className="stageTextarea"
           readOnly={stageReadOnly}
-          placeholder={stageReadOnly ? 'Read-only (select Custom to edit)' : 'Edit the stage instruction…'}
+          placeholder={stageReadOnly ? 'Read-only (select Custom to edit)' : 'Describe the setting and the rules of interaction.\n\nExample:\n“This is a job interview. The candidate should answer concisely and ask clarifying questions. The interviewer should probe for specifics.”'}
         />
         <div className="hint">
           {stageReadOnly

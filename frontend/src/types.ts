@@ -1,6 +1,6 @@
 export type InteractionMode = 'debate' | 'collaboration' | 'interaction' | 'custom';
 
-export type Provider = 'openai' | 'anthropic' | 'google';
+export type Provider = 'openai' | 'anthropic' | 'google' | 'ollama';
 
 export type ModelSpec = {
   id: string;

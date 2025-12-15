@@ -20,13 +20,13 @@ class AgentConfig(BaseModel):
     system_prompt: str | None = Field(default=None, max_length=12000)
     debate_side: Literal["for", "against"] | None = None
     responsibility: str | None = Field(default=None, max_length=500)
-    provider: Literal["openai", "anthropic", "google"] | None = None
+    provider: Literal["openai", "anthropic", "google", "ollama"]
 
 
 class ModeratorConfig(BaseModel):
     enabled: bool = False
     model: str | None = Field(default=None, max_length=128)
-    provider: Literal["openai", "anthropic", "google"] | None = None
+    provider: Literal["openai", "anthropic", "google", "ollama"] | None = None
     system_prompt: str | None = Field(default=None, max_length=12000)
     frequency_turns: int = Field(default=2, ge=1, le=20)
 
@@ -39,7 +39,7 @@ class SynthesizerConfig(BaseModel):
 
     enabled: bool = False
     model: str | None = Field(default=None, max_length=128)
-    provider: Literal["openai", "anthropic", "google"] | None = None
+    provider: Literal["openai", "anthropic", "google", "ollama"] | None = None
     system_prompt: str | None = Field(default=None, max_length=12000)
     frequency_turns: int = Field(default=2, ge=1, le=20)
 
@@ -47,7 +47,7 @@ class SynthesizerConfig(BaseModel):
 class StartSimulationRequest(BaseModel):
     topic: str = Field(min_length=1, max_length=2000)
     mode: InteractionMode
-    stage: str = Field(min_length=1, max_length=2000)
+    stage: str = Field(default="", max_length=2000)
     turn_limit: int = Field(default=10, ge=1, le=40)
 
     agents: list[AgentConfig] = Field(min_length=2, max_length=4)

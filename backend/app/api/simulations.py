@@ -111,4 +111,15 @@ async def download_transcript(
     if state.transcript is None:
         raise HTTPException(status_code=409, detail="Transcript not available yet.")
 
-    return state.transcript.model_dump()
+    return {
+        "simulation_id": state.simulation_id,
+        "topic": state.request.topic,
+        "mode": state.request.mode,
+        "stage": state.request.stage,
+        "agents": [a.model_dump() for a in state.request.agents],
+        "moderator": state.request.moderator.model_dump(),
+        "synthesizer": state.request.synthesizer.model_dump(),
+        "messages": [
+            {"name": m.name, "content": m.content} for m in state.transcript.messages
+        ],
+    }

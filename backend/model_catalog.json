@@ -58,6 +58,16 @@
       "id": "claude-opus-4-5",
       "display_name": "Claude Opus 4.5",
       "provider": "anthropic"
+    },
+    {
+      "id": "gpt-oss",
+      "display_name": "GPT-OSS",
+      "provider": "ollama"
+    },
+    {
+      "id": "gemma3:1b",
+      "display_name": "Gemma 3:1b",
+      "provider": "ollama"
     }
   ]
 }

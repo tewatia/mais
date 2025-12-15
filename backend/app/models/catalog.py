@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, ValidationError
 logger = logging.getLogger(__name__)
 
 
-Provider = Literal["openai", "google", "anthropic"]
+Provider = Literal["openai", "google", "anthropic", "ollama"]
 
 
 class ModelSpec(BaseModel):
@@ -40,7 +40,9 @@ def resolve_catalog_path(model_catalog_path: str | None) -> Path:
     2) env var MODEL_CATALOG_PATH
     3) backend/model_catalog.json
     """
-    raw = (model_catalog_path or "").strip() or os.getenv("MODEL_CATALOG_PATH", "").strip()
+    raw = (model_catalog_path or "").strip() or os.getenv(
+        "MODEL_CATALOG_PATH", ""
+    ).strip()
     if raw:
         p = Path(raw)
         return p if p.is_absolute() else (_backend_dir() / p).resolve()
@@ -68,5 +70,3 @@ def load_model_catalog(*, model_catalog_path: str | None = None) -> ModelCatalog
             extra={"path": str(path), "error": str(e)},
         )
         return ModelCatalog(models=[])
-
-
