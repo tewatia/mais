@@ -29,8 +29,6 @@ The UI renders messages as **Markdown** (code blocks, lists, etc.) and streams t
 
 - `backend/`: FastAPI + LangChain (multi-provider LLM calls)
 - `frontend/`: React + Vite + TypeScript
-- `FUNCTIONAL_REQUIREMENTS.md`: product requirements (MVP)
-- `TECHNICAL_DOCUMENTATION.md`: high-level architecture
 - `backend/TECHNICAL_DOCUMENTATION.md`: detailed backend API + flow
 
 ---
