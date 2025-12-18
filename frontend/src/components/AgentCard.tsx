@@ -92,6 +92,51 @@ export function AgentCard({ agent, index, mode, models, onChange, onRemove }: Pr
         <div className="hint">Model list comes from the backend catalog.</div>
       </label>
 
+      <details style={{ marginTop: 8 }}>
+        <summary style={{ cursor: 'pointer', userSelect: 'none', fontWeight: 600 }}>
+          ⚙️ Generation Settings (Optional)
+        </summary>
+        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <label className="field">
+            <div className="label">Temperature</div>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="2"
+              value={agent.temperature ?? ''}
+              onChange={(e) => onChange({ ...agent, temperature: e.target.value ? parseFloat(e.target.value) : null })}
+              placeholder="e.g., 0.7 (provider default)"
+            />
+            <div className="hint">Controls randomness. Leave blank to use provider default.</div>
+          </label>
+
+          <label className="field">
+            <div className="label">Max Tokens</div>
+            <input
+              type="number"
+              min="0"
+              value={agent.max_tokens ?? ''}
+              onChange={(e) => onChange({ ...agent, max_tokens: e.target.value ? parseInt(e.target.value, 10) : null })}
+              placeholder="e.g., 1024 (provider default)"
+            />
+            <div className="hint">Max output tokens. Leave blank or 0 to use provider default.</div>
+          </label>
+
+          <label className="field">
+            <div className="label">Context Size</div>
+            <input
+              type="number"
+              min="0"
+              value={agent.context_size ?? ''}
+              onChange={(e) => onChange({ ...agent, context_size: e.target.value ? parseInt(e.target.value, 10) : null })}
+              placeholder="e.g., 8192 (provider default)"
+            />
+            <div className="hint">Context window size. Only Ollama supports this; others infer from model ID.</div>
+          </label>
+        </div>
+      </details>
+
       {mode === 'debate' ? (
         <label className="field">
           <div className="label">Debate side</div>

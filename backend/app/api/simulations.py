@@ -30,8 +30,6 @@ async def start_simulation(
     # Server-side bounds (defense-in-depth beyond Pydantic)
     if body.turn_limit > settings.max_turn_limit:
         raise HTTPException(status_code=400, detail="turn_limit too large")
-    if len(body.topic) > settings.max_topic_chars:
-        raise HTTPException(status_code=400, detail="topic too large")
 
     if manager.has_active():
         raise HTTPException(

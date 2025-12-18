@@ -50,9 +50,6 @@ class Settings(BaseSettings):
 
     max_turn_limit: int = 40
     max_agents: int = 4
-    max_topic_chars: int = 2000
-    max_prompt_chars: int = 12000
-    max_stage_chars: int = 2000
     orphan_grace_seconds: int = 5
 
     # Model catalog configuration (optional override).

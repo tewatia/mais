@@ -20,6 +20,10 @@ export type AgentConfig = {
   provider?: Provider | null;
   debate_side?: 'for' | 'against' | null;
   responsibility?: string | null;
+  // Generation settings (optional)
+  temperature?: number | null;
+  max_tokens?: number | null;
+  context_size?: number | null;
   ui_colorClass?: string | null; // UI-only (not sent to backend)
 };
 
@@ -29,6 +33,10 @@ export type ModeratorConfig = {
   provider?: Provider | null;
   system_prompt?: string | null;
   frequency_turns?: number;
+  // Generation settings (optional)
+  temperature?: number | null;
+  max_tokens?: number | null;
+  context_size?: number | null;
 };
 
 export type SynthesizerConfig = {
@@ -37,6 +45,10 @@ export type SynthesizerConfig = {
   provider?: Provider | null;
   system_prompt?: string | null;
   frequency_turns?: number;
+  // Generation settings (optional)
+  temperature?: number | null;
+  max_tokens?: number | null;
+  context_size?: number | null;
 };
 
 export type StartSimulationRequest = {

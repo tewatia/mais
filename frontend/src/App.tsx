@@ -129,6 +129,9 @@ export default function App() {
   const [moderatorPrompt, setModeratorPrompt] = useState(
     'You are a debate moderator.\nDo NOT introduce new ideas.\nSummarize the debate so far (neutral), merge duplicates, and suggest the next focus/questions.',
   );
+  const [moderatorTemp, setModeratorTemp] = useState<number | null>(null);
+  const [moderatorMaxTokens, setModeratorMaxTokens] = useState<number | null>(null);
+  const [moderatorContextSize, setModeratorContextSize] = useState<number | null>(null);
 
   const [synthEnabled, setSynthEnabled] = useState(false);
   const [synthModel, setSynthModel] = useState('gpt-4o-mini');
@@ -136,6 +139,9 @@ export default function App() {
   const [synthPrompt, setSynthPrompt] = useState(
     'You are the collaboration lead.\nDo NOT introduce new ideas.\nSummarize progress, merge duplicates, and list concrete next steps using only what participants already said.',
   );
+  const [synthTemp, setSynthTemp] = useState<number | null>(null);
+  const [synthMaxTokens, setSynthMaxTokens] = useState<number | null>(null);
+  const [synthContextSize, setSynthContextSize] = useState<number | null>(null);
 
   const [simulationId, setSimulationId] = useState<string | null>(null);
   const [uiError, setUiError] = useState<string | null>(null);
@@ -218,6 +224,9 @@ export default function App() {
         system_prompt: a.system_prompt ?? null,
         debate_side: mode === 'debate' ? (a.debate_side ?? null) : null,
         responsibility: mode === 'collaboration' ? (a.responsibility ?? null) : null,
+        temperature: a.temperature ?? null,
+        max_tokens: (a.max_tokens ?? 0) === 0 ? null : a.max_tokens,
+        context_size: (a.context_size ?? 0) === 0 ? null : a.context_size,
       })),
       moderator: {
         enabled: mode === 'debate' ? moderatorEnabled : false,
@@ -226,6 +235,9 @@ export default function App() {
           mode === 'debate' && moderatorEnabled ? providerForModel(moderatorModel) : null,
         system_prompt: mode === 'debate' ? moderatorPrompt : null,
         frequency_turns: moderatorFrequency,
+        temperature: moderatorTemp ?? null,
+        max_tokens: (moderatorMaxTokens ?? 0) === 0 ? null : moderatorMaxTokens,
+        context_size: (moderatorContextSize ?? 0) === 0 ? null : moderatorContextSize,
       },
       synthesizer: {
         enabled: mode === 'collaboration' ? synthEnabled : false,
@@ -234,6 +246,9 @@ export default function App() {
           mode === 'collaboration' && synthEnabled ? providerForModel(synthModel) : null,
         system_prompt: mode === 'collaboration' ? synthPrompt : null,
         frequency_turns: synthFrequency,
+        temperature: synthTemp ?? null,
+        max_tokens: (synthMaxTokens ?? 0) === 0 ? null : synthMaxTokens,
+        context_size: (synthContextSize ?? 0) === 0 ? null : synthContextSize,
       },
     };
 
@@ -302,7 +317,7 @@ export default function App() {
             </div>
 
             <div className="card">
-              <div className="cardTitle">Turn Limit</div>
+              <div className="cardTitle">Round Limit</div>
               <input
                 type="number"
                 min={1}
@@ -310,7 +325,7 @@ export default function App() {
                 value={turnLimit}
                 onChange={(e) => setTurnLimit(Number(e.target.value))}
               />
-              <div className="hint">Prevents infinite loops. Moderator can also steer in Debate mode.</div>
+              <div className="hint">Number of rounds (each agent speaks once per round). E.g., 2 rounds with 3 agents = 6 total turns.</div>
       </div>
 
       <div className="card">
@@ -385,8 +400,56 @@ export default function App() {
                   </select>
                 </label>
 
+                <details style={{ marginTop: 8 }}>
+                  <summary style={{ cursor: 'pointer', userSelect: 'none', fontWeight: 600 }}>
+                    ⚙️ Generation Settings (Optional)
+                  </summary>
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <label className="field">
+                      <div className="label">Temperature</div>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="2"
+                        value={moderatorTemp ?? ''}
+                        onChange={(e) => setModeratorTemp(e.target.value ? parseFloat(e.target.value) : null)}
+                        placeholder="e.g., 0.7 (provider default)"
+                        disabled={!moderatorEnabled}
+                      />
+                      <div className="hint">Controls randomness. Leave blank to use provider default.</div>
+                    </label>
+
+                    <label className="field">
+                      <div className="label">Max Tokens</div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={moderatorMaxTokens ?? ''}
+                        onChange={(e) => setModeratorMaxTokens(e.target.value ? parseInt(e.target.value, 10) : null)}
+                        placeholder="e.g., 1024 (provider default)"
+                        disabled={!moderatorEnabled}
+                      />
+                      <div className="hint">Max output tokens. Leave blank or 0 to use provider default.</div>
+                    </label>
+
+                    <label className="field">
+                      <div className="label">Context Size</div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={moderatorContextSize ?? ''}
+                        onChange={(e) => setModeratorContextSize(e.target.value ? parseInt(e.target.value, 10) : null)}
+                        placeholder="e.g., 8192 (provider default)"
+                        disabled={!moderatorEnabled}
+                      />
+                      <div className="hint">Context window size. Only Ollama supports this; others infer from model ID.</div>
+                    </label>
+                  </div>
+                </details>
+
                 <label className="field">
-                  <div className="label">Frequency (turns)</div>
+                  <div className="label">Frequency (actor turns)</div>
                   <input
                     type="number"
                     min={1}
@@ -395,6 +458,9 @@ export default function App() {
                     onChange={(e) => setModeratorFrequency(Number(e.target.value))}
                     disabled={!moderatorEnabled}
                   />
+                  <div className="hint">
+                    Moderator runs every N actor turns. E.g., frequency=2 means after 2 turns, 4 turns, etc. Always runs once at the end.
+                  </div>
                 </label>
 
                 <label className="field">
@@ -442,6 +508,54 @@ export default function App() {
                     ))}
                   </select>
                 </label>
+
+                <details style={{ marginTop: 8 }}>
+                  <summary style={{ cursor: 'pointer', userSelect: 'none', fontWeight: 600 }}>
+                    ⚙️ Generation Settings (Optional)
+                  </summary>
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <label className="field">
+                      <div className="label">Temperature</div>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="2"
+                        value={synthTemp ?? ''}
+                        onChange={(e) => setSynthTemp(e.target.value ? parseFloat(e.target.value) : null)}
+                        placeholder="e.g., 0.7 (provider default)"
+                        disabled={!synthEnabled}
+                      />
+                      <div className="hint">Controls randomness. Leave blank to use provider default.</div>
+                    </label>
+
+                    <label className="field">
+                      <div className="label">Max Tokens</div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={synthMaxTokens ?? ''}
+                        onChange={(e) => setSynthMaxTokens(e.target.value ? parseInt(e.target.value, 10) : null)}
+                        placeholder="e.g., 1024 (provider default)"
+                        disabled={!synthEnabled}
+                      />
+                      <div className="hint">Max output tokens. Leave blank or 0 to use provider default.</div>
+                    </label>
+
+                    <label className="field">
+                      <div className="label">Context Size</div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={synthContextSize ?? ''}
+                        onChange={(e) => setSynthContextSize(e.target.value ? parseInt(e.target.value, 10) : null)}
+                        placeholder="e.g., 8192 (provider default)"
+                        disabled={!synthEnabled}
+                      />
+                      <div className="hint">Context window size. Only Ollama supports this; others infer from model ID.</div>
+                    </label>
+                  </div>
+                </details>
 
                 <label className="field">
                   <div className="label">Frequency (collaboration rounds)</div>

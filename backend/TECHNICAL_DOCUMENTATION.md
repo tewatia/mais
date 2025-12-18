@@ -76,7 +76,10 @@ Creates a simulation and starts an async background task to run it.
       "persona": "Custom",
       "system_prompt": "Be concise.",
       "debate_side": "for",
-      "provider": "openai"
+      "provider": "openai",
+      "temperature": 0.7,
+      "max_tokens": 1024,
+      "context_size": null
     },
     {
       "name": "Actor 2",
@@ -84,7 +87,10 @@ Creates a simulation and starts an async background task to run it.
       "persona": "Custom",
       "system_prompt": "Be skeptical.",
       "debate_side": "against",
-      "provider": "anthropic"
+      "provider": "anthropic",
+      "temperature": null,
+      "max_tokens": null,
+      "context_size": null
     }
   ],
   "moderator": {
@@ -92,14 +98,20 @@ Creates a simulation and starts an async background task to run it.
     "model": "gpt-4o-mini",
     "provider": "openai",
     "frequency_turns": 2,
-    "system_prompt": "Optional moderator prompt..."
+    "system_prompt": "Optional moderator prompt...",
+    "temperature": null,
+    "max_tokens": null,
+    "context_size": null
   },
   "synthesizer": {
     "enabled": false,
     "model": "gpt-4o-mini",
     "provider": "openai",
     "frequency_turns": 2,
-    "system_prompt": "Optional synthesizer prompt..."
+    "system_prompt": "Optional synthesizer prompt...",
+    "temperature": null,
+    "max_tokens": null,
+    "context_size": null
   }
 }
 ```
@@ -115,6 +127,27 @@ Creates a simulation and starts an async background task to run it.
   - If an actor omits `debate_side` (Auto), the backend assigns it deterministically:
     - odd actor index (`agent_id` 1, 3, ...) → `for`
     - even actor index (`agent_id` 2, 4, ...) → `against`
+- **Turn limit semantics**:
+  - `turn_limit` is interpreted as **"number of rounds"** where each agent speaks once per round
+  - Effective max actor turns = `turn_limit` × number of agents
+  - Example: `turn_limit=2` with 3 agents → each agent speaks 2 times → 6 total actor turns
+  - Moderator and synthesizer turns do NOT count against this limit
+- **Moderator frequency**:
+  - `frequency_turns` is based on **actor turns**, not global turn counter
+  - Example: `frequency_turns=2` means moderator runs after 2 actor turns, 4 actor turns, etc.
+  - Moderator **always runs once at the end** as a final summary (if enabled), even if not scheduled
+- **Synthesizer frequency**:
+  - `frequency_turns` is based on **collaboration rounds** (full passes where all agents speak once)
+  - Synthesizer **always runs once at the end** as a final summary (if enabled), even if not scheduled
+- **Generation settings (optional)**:
+  - `temperature` (float, 0.0-2.0): controls randomness; `null` uses provider default
+  - `max_tokens` (int): max output tokens; `null` or `0` omits this param → provider default
+  - `context_size` (int): context window size; `null` or `0` omits this param; only Ollama (`num_ctx`) supports override
+  - These fields are available for **agents**, **moderator**, and **synthesizer**
+  - In the UI, these settings appear in a collapsible section right below the model dropdown
+- **Removed limits**: 
+  - Server no longer enforces `max_topic_chars`, `max_prompt_chars`, or `max_stage_chars`
+  - Pydantic still enforces basic min/max on model/persona names, but allows arbitrarily long topics, stages, and system prompts
 
 **Response 200**
 ```json

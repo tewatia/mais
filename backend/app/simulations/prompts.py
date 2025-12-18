@@ -3,11 +3,7 @@ from __future__ import annotations
 import json
 import re
 
-from app.simulations.models import (
-    AgentConfig,
-    InteractionMode,
-    StartSimulationRequest,
-)
+from app.simulations.models import AgentConfig, InteractionMode, StartSimulationRequest
 
 _JSON_BLOCK_RE = re.compile(r"\{[\s\S]*\}")
 
@@ -58,7 +54,7 @@ def append_json_contract(*, base_prompt: str, kind: str, final_call: bool) -> st
             "The discussion is now complete. You must provide the synthesis/summary now.\n"
             "Set terminate=true.\n"
             if final_call
-            else "If you have enough information to conclude early, set terminate=true and provide the concluding summary.\n"
+            else "If you have enough information to conclude early or if you think the discussion is going nowhere, set terminate=true and provide the concluding summary.\n"
         )
     ).strip()
 

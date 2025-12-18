@@ -17,18 +17,26 @@ class AgentConfig(BaseModel):
     name: str = Field(min_length=1, max_length=64)
     model: str = Field(min_length=1, max_length=128)
     persona: str | None = Field(default=None, max_length=200)
-    system_prompt: str | None = Field(default=None, max_length=12000)
+    system_prompt: str | None = None
     debate_side: Literal["for", "against"] | None = None
-    responsibility: str | None = Field(default=None, max_length=500)
+    responsibility: str | None = None
     provider: Literal["openai", "anthropic", "google", "ollama"]
+    # Optional generation settings (omit if None or 0)
+    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    max_tokens: int | None = Field(default=None, ge=0)
+    context_size: int | None = Field(default=None, ge=0)
 
 
 class ModeratorConfig(BaseModel):
     enabled: bool = False
     model: str | None = Field(default=None, max_length=128)
     provider: Literal["openai", "anthropic", "google", "ollama"] | None = None
-    system_prompt: str | None = Field(default=None, max_length=12000)
+    system_prompt: str | None = None
     frequency_turns: int = Field(default=2, ge=1, le=20)
+    # Optional generation settings (omit if None or 0)
+    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    max_tokens: int | None = Field(default=None, ge=0)
+    context_size: int | None = Field(default=None, ge=0)
 
 
 class SynthesizerConfig(BaseModel):
@@ -40,14 +48,18 @@ class SynthesizerConfig(BaseModel):
     enabled: bool = False
     model: str | None = Field(default=None, max_length=128)
     provider: Literal["openai", "anthropic", "google", "ollama"] | None = None
-    system_prompt: str | None = Field(default=None, max_length=12000)
+    system_prompt: str | None = None
     frequency_turns: int = Field(default=2, ge=1, le=20)
+    # Optional generation settings (omit if None or 0)
+    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    max_tokens: int | None = Field(default=None, ge=0)
+    context_size: int | None = Field(default=None, ge=0)
 
 
 class StartSimulationRequest(BaseModel):
-    topic: str = Field(min_length=1, max_length=2000)
+    topic: str = Field(min_length=1)
     mode: InteractionMode
-    stage: str = Field(default="", max_length=2000)
+    stage: str = ""
     turn_limit: int = Field(default=10, ge=1, le=40)
 
     agents: list[AgentConfig] = Field(min_length=2, max_length=4)

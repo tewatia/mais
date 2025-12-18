@@ -15,7 +15,7 @@ const DEFAULT_STAGES: Record<InteractionMode, string> = {
   interaction:
     "This is an open conversation.\n\nParticipants should interact naturally.\n- Ask clarifying questions when helpful.\n- Respond directly and keep the conversation moving.\n- It’s okay to disagree, but don’t force debate or consensus.\n\nGoal: a useful, natural exchange.",
   custom:
-    'Describe the setting and the rules of interaction.\n\nExample:\n“This is a job interview. The candidate should answer concisely and ask clarifying questions. The interviewer should probe for specifics.”',
+    '',
 };
 
 export function ModeSelector({ mode, onChange, stage, onStageChange }: Props) {
