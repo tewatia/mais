@@ -16,20 +16,20 @@ class _FakeStreamingModel:
 
 
 async def test_start_and_download_transcript(app, monkeypatch):
-    # Patch the LLM factory used by the runner so we don't call real providers.
-    from app.simulations import runner as runner_module
+    # Patch the LLM factory used by the turn executor so we don't call real providers.
+    from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None):  # noqa: ARG001
+    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
         # deterministic output per call
         return _FakeStreamingModel(tokens=[f"[{model}] hello "])
 
-    monkeypatch.setattr(runner_module, "build_chat_model", _fake_build_chat_model)
+    monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
 
     payload = {
         "topic": "Is AI sentient?",
         "mode": "debate",
         "stage": "Mode: Debate Arena. Critique and disagree when appropriate.",
-        "turn_limit": 2,
+        "turn_limit": 1,  # 1 round with 2 agents = 2 messages
         "agents": [
             {
                 "name": "Agent A",
@@ -70,13 +70,13 @@ async def test_start_and_download_transcript(app, monkeypatch):
 
 
 async def test_stop_simulation(app, monkeypatch):
-    from app.simulations import runner as runner_module
+    from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None):  # noqa: ARG001
+    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
         # lots of tokens so we have time to stop
         return _FakeStreamingModel(tokens=["x"] * 200)
 
-    monkeypatch.setattr(runner_module, "build_chat_model", _fake_build_chat_model)
+    monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
 
     payload = {
         "topic": "Test stop",
@@ -100,18 +100,18 @@ async def test_stop_simulation(app, monkeypatch):
 
 
 async def test_collaboration_synthesizer_runs(app, monkeypatch):
-    from app.simulations import runner as runner_module
+    from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None):  # noqa: ARG001
+    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
         return _FakeStreamingModel(tokens=[f"[{model}] ok "])
 
-    monkeypatch.setattr(runner_module, "build_chat_model", _fake_build_chat_model)
+    monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
 
     payload = {
         "topic": "Plan a weekend trip",
         "mode": "collaboration",
         "stage": "This is a collaborative setting.",
-        "turn_limit": 3,
+        "turn_limit": 2,  # 2 rounds with 2 agents = 4 actor turns + 1 synthesizer = 5 total
         "agents": [
             {"name": "Agent A", "model": "gpt-4o-mini", "provider": "openai"},
             {"name": "Agent B", "model": "gpt-4o-mini", "provider": "openai"},
@@ -130,9 +130,10 @@ async def test_collaboration_synthesizer_runs(app, monkeypatch):
             dl = await client.get(f"/api/simulations/{sim_id}/download")
             if dl.status_code == 200:
                 data = dl.json()
-                # turn_limit counts actor turns only; synthesizer always runs once at the end if enabled.
-                assert len(data["messages"]) == 4
-                assert data["messages"][-1]["role"] == "synthesizer"
+                # turn_limit=2 with 2 agents = 4 actor turns + 1 synthesizer = 5 total
+                assert len(data["messages"]) == 5
+                # Check last message is from synthesizer by name
+                assert "Synthesizer" in data["messages"][-1]["name"]
                 return
             await asyncio.sleep(0.01)
 
@@ -140,18 +141,18 @@ async def test_collaboration_synthesizer_runs(app, monkeypatch):
 
 
 async def test_interaction_mode_runs(app, monkeypatch):
-    from app.simulations import runner as runner_module
+    from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None):  # noqa: ARG001
+    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
         return _FakeStreamingModel(tokens=["hi "])
 
-    monkeypatch.setattr(runner_module, "build_chat_model", _fake_build_chat_model)
+    monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
 
     payload = {
         "topic": "Talk about coffee",
         "mode": "interaction",
         "stage": "Mode: Interaction. Converse naturally.",
-        "turn_limit": 2,
+        "turn_limit": 1,  # 1 round with 2 agents = 2 messages
         "agents": [
             {"name": "Agent A", "model": "gpt-4o-mini", "provider": "openai"},
             {"name": "Agent B", "model": "gpt-4o-mini", "provider": "openai"},
@@ -178,7 +179,7 @@ async def test_interaction_mode_runs(app, monkeypatch):
 
 
 async def test_stage_is_prepended_to_system_prompt(app, monkeypatch):
-    from app.simulations import runner as runner_module
+    from app.simulations import turn_executor as te
 
     stage = "STAGE: Speak like a pirate."
     captured: dict[str, str] = {}
@@ -189,10 +190,10 @@ async def test_stage_is_prepended_to_system_prompt(app, monkeypatch):
             captured["system"] = getattr(messages[0], "content", "")
             yield SimpleNamespace(content="ok")
 
-    def _fake_build_chat_model(*, settings, model, provider=None):  # noqa: ARG001
+    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
         return _CapturingModel()
 
-    monkeypatch.setattr(runner_module, "build_chat_model", _fake_build_chat_model)
+    monkeypatch.setattr(te, "build_chat_model", _fake_build_chat_model)
 
     payload = {
         "topic": "Hello",
