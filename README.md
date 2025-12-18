@@ -66,7 +66,16 @@ pip install -r backend/requirements.txt
 copy backend\env.example backend\.env
 ```
 
-Edit `backend/.env` and set at least one provider key (depending on models you use):
+The below providers are supported. You can use one or multiple at a time.
+
+- `Ollama`
+- `OpenAI`
+- `Google`
+- `Anthropic`
+
+Configuration:
+
+Edit `backend/.env` to configure the providers you want to use. Note that API keys are only required for cloud providers. If you are only using Ollama, no keys are necessary.
 
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
