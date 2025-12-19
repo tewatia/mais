@@ -19,7 +19,15 @@ async def test_start_and_download_transcript(app, monkeypatch):
     # Patch the LLM factory used by the turn executor so we don't call real providers.
     from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
+    def _fake_build_chat_model(
+        *,
+        settings,
+        model,
+        provider=None,
+        temperature=None,
+        max_tokens=None,
+        context_size=None,
+    ):  # noqa: ARG001
         # deterministic output per call
         return _FakeStreamingModel(tokens=[f"[{model}] hello "])
 
@@ -72,7 +80,15 @@ async def test_start_and_download_transcript(app, monkeypatch):
 async def test_stop_simulation(app, monkeypatch):
     from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
+    def _fake_build_chat_model(
+        *,
+        settings,
+        model,
+        provider=None,
+        temperature=None,
+        max_tokens=None,
+        context_size=None,
+    ):  # noqa: ARG001
         # lots of tokens so we have time to stop
         return _FakeStreamingModel(tokens=["x"] * 200)
 
@@ -102,7 +118,15 @@ async def test_stop_simulation(app, monkeypatch):
 async def test_collaboration_synthesizer_runs(app, monkeypatch):
     from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
+    def _fake_build_chat_model(
+        *,
+        settings,
+        model,
+        provider=None,
+        temperature=None,
+        max_tokens=None,
+        context_size=None,
+    ):  # noqa: ARG001
         return _FakeStreamingModel(tokens=[f"[{model}] ok "])
 
     monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
@@ -143,7 +167,15 @@ async def test_collaboration_synthesizer_runs(app, monkeypatch):
 async def test_interaction_mode_runs(app, monkeypatch):
     from app.simulations import turn_executor
 
-    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
+    def _fake_build_chat_model(
+        *,
+        settings,
+        model,
+        provider=None,
+        temperature=None,
+        max_tokens=None,
+        context_size=None,
+    ):  # noqa: ARG001
         return _FakeStreamingModel(tokens=["hi "])
 
     monkeypatch.setattr(turn_executor, "build_chat_model", _fake_build_chat_model)
@@ -190,7 +222,15 @@ async def test_stage_is_prepended_to_system_prompt(app, monkeypatch):
             captured["system"] = getattr(messages[0], "content", "")
             yield SimpleNamespace(content="ok")
 
-    def _fake_build_chat_model(*, settings, model, provider=None, temperature=None, max_tokens=None, context_size=None):  # noqa: ARG001
+    def _fake_build_chat_model(
+        *,
+        settings,
+        model,
+        provider=None,
+        temperature=None,
+        max_tokens=None,
+        context_size=None,
+    ):  # noqa: ARG001
         return _CapturingModel()
 
     monkeypatch.setattr(te, "build_chat_model", _fake_build_chat_model)

@@ -1,6 +1,23 @@
 # MAIS (Multi-Agent Interaction Studio)
 
-![Banner](./assets/banner.png)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![LangChain](https://img.shields.io/badge/🦜_LangChain-1C3C3C?logoColor=white)](https://www.langchain.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+
+### 🤖 Supported LLM Providers
+
+[![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)](https://openai.com/)
+[![Anthropic](https://img.shields.io/badge/Anthropic-191919?logo=anthropic&logoColor=white)](https://www.anthropic.com/)
+[![Google AI](https://img.shields.io/badge/Google_AI-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
+[![Ollama](https://img.shields.io/badge/Ollama-000000?logo=ollama&logoColor=white)](https://ollama.com/)
+
+> Mix and match models from different providers in a single simulation. Use cloud APIs (OpenAI, Anthropic, Google) or run locally with Ollama.
+
+![Banner](https://raw.githubusercontent.com/tewatia/static/7cd6c5066228ed2377e9fa4cd0b381a6136c25df/assets/mais_banner.png)
 
 MAIS is a web app for running **turn-based, multi-actor LLM simulations** with real-time streaming.
 
@@ -66,16 +83,9 @@ pip install -r backend/requirements.txt
 copy backend\env.example backend\.env
 ```
 
-The below providers are supported. You can use one or multiple at a time.
+**Configure API keys** in `backend/.env`:
 
-- `Ollama`
-- `OpenAI`
-- `Google`
-- `Anthropic`
-
-Configuration:
-
-Edit `backend/.env` to configure the providers you want to use. Note that API keys are only required for cloud providers. If you are only using Ollama, no keys are necessary.
+Edit `backend/.env` to add your API keys for the cloud providers you want to use. API keys are only required for OpenAI, Anthropic, and Google. Ollama runs locally without an API key.
 
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
